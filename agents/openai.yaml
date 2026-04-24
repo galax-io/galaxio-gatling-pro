@@ -1,0 +1,7 @@
+interface:
+  display_name: "Galaxio Gatling Pro"
+  short_description: "Gatling Scala performance test patterns"
+  brand_color: "#E45B2C"
+  default_prompt: "Use $galaxio-gatling-pro to create a Gatling Scala performance test with Galaxio project layout."
+policy:
+  allow_implicit_invocation: true
