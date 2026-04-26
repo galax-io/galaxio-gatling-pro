@@ -1,0 +1,18 @@
+{
+  "name": "galaxio-gatling-pro",
+  "version": "1.0.0",
+  "description": "Gatling Scala performance test guidance for Galaxio-style repositories",
+  "author": "Galaxio",
+  "activation": {
+    "keywords": ["gatling", "performance testing", "load testing", "scala", "sbt", "simulation"],
+    "file_patterns": ["**/*.scala", "**/build.sbt", "**/gatling.conf", "**/simulation.conf"],
+    "tech_stack": {
+      "languages": ["Scala"]
+    }
+  },
+  "provides": {
+    "guidance": ["gatling", "performance-testing", "scalafmt", "picatinny"],
+    "patterns": ["cases", "feeders", "scenarios", "simulations"]
+  },
+  "dependencies": []
+}
