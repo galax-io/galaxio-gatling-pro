@@ -1,6 +1,11 @@
 ---
 name: galaxio-gatling-pro
-description: Use when creating, reviewing, or refactoring Gatling Scala performance tests in Galaxio style: sbt projects, Gatling 3.11.x, Scala 2.13, Picatinny config/feeders, cases/feeders/scenarios/simulations layout, HTTP/JDBC/JMS/Kafka/AMQP protocols, open and closed workload models, smoke/debug simulations, and scalafmt-ready code.
+description: >
+  Use when creating, reviewing, or refactoring Gatling Scala performance tests
+  in Galaxio style: sbt projects, Gatling 3.11.x, Scala 2.13, Picatinny
+  config/feeders, cases/feeders/scenarios/simulations layout,
+  HTTP/JDBC/JMS/Kafka/AMQP protocols, open and closed workload models,
+  smoke/debug simulations, and scalafmt-ready code.
 ---
 
 # Galaxio Gatling Pro
