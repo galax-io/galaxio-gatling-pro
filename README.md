@@ -1,17 +1,18 @@
 # Galaxio Gatling Pro
 
-`galaxio-gatling-pro` is a Codex skill for writing Gatling Scala performance tests in a Galaxio-style repository layout.
+`galaxio-gatling-pro` is a Codex skill for writing Gatling JVM performance tests in a Galaxio-style repository layout.
 
 ## What It Covers
 
-- Gatling 3.11.x
-- Scala 2.13
-- sbt-based projects
-- Picatinny-first config and feeder helpers
+- Gatling 3.x
+- Scala, Java, and Kotlin Gatling projects
+- sbt, Maven, and Gradle build-tool layouts
+- Picatinny-first config and feeder helpers where available
 - HTTP, JDBC, JMS, Kafka, and AMQP test flows
 - Open and closed workload models
 - Smoke and debug simulations
-- Scalafmt-friendly code structure
+- Build-tool-correct source roots and run commands
+- Scalafmt-friendly Scala code structure
 
 ## Repository Layout
 
@@ -29,7 +30,7 @@ The skill is meant for:
 - `performance/cases` for atomic requests and actions
 - `performance/feeders` for reusable feeder logic
 - `performance/scenarios` for business flows
-- `src/test/scala/...` simulation layers, adapted to the target repo conventions
+- `src/test/...` or `src/gatling/...` simulation layers, adapted to the target build tool conventions
 
 ## Notes
 

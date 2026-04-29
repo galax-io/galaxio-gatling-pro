@@ -1,22 +1,36 @@
 ---
 name: galaxio-gatling-pro
 description: >
-  Use when creating, reviewing, or refactoring Gatling Scala performance tests
-  in Galaxio style: sbt projects, Gatling 3.11.x, Scala 2.13, Picatinny
-  config/feeders, cases/feeders/scenarios/simulations layout,
+  Use when creating, reviewing, or refactoring Gatling JVM performance tests
+  in Galaxio style: Scala/Java/Kotlin projects with sbt, Maven, or Gradle,
+  Gatling 3.x, Picatinny config/feeders where available,
+  cases/feeders/scenarios/simulations layout,
   HTTP/JDBC/JMS/Kafka/AMQP protocols, open and closed workload models,
-  smoke/debug simulations, and scalafmt-ready code.
+  smoke/debug simulations, and build-tool-correct project structure.
 ---
 
 # Galaxio Gatling Pro
 
 ## Core Rules
 
-Use Gatling `3.11.x`, Scala `2.13.x`, sbt, Scala DSL.
+Use Gatling `3.11.x` and Scala `2.13.x` as the Galaxio baseline.
 
-Prefer `org.galaxio.gatling-picatinny` helpers when repo has dependency.
+Supported JVM combinations:
 
-Generated code must pass:
+- Scala + sbt: Scala DSL, `src/test/scala`, optional `src/it/scala`.
+- Scala + Maven: Scala DSL, `src/test/scala`, `scala-maven-plugin`.
+- Scala + Gradle: Scala DSL, `src/gatling/scala`, Gradle `gatling` source set.
+- Java + Maven: Java DSL, `src/test/java`.
+- Java + Gradle: Java DSL, `src/gatling/java`, Gradle `gatling` source set.
+- Kotlin + Maven: Java DSL from Kotlin, `src/test/kotlin`, `kotlin-maven-plugin`.
+- Kotlin + Gradle: Java DSL from Kotlin, `src/gatling/kotlin`, Gradle `gatling` source set.
+
+Prefer `org.galaxio.gatling-picatinny` helpers when the repo has the dependency.
+Picatinny examples in this skill are Scala-first; for Java/Kotlin, keep the same
+architecture and use small local config/feeder helpers if Picatinny is not exposed
+through the project's chosen DSL.
+
+Generated Scala code in sbt projects must pass:
 
 ```bash
 sbt scalafmtAll scalafmtSbt
@@ -24,22 +38,75 @@ sbt scalafmtAll scalafmtSbt
 
 When changing existing repo, follow local style first. If no style, use this skill.
 
+## Build Tool Matrix
+
+Use the build tool's conventional Gatling source roots. Do not move everything into
+`src/test/scala` just because the Galaxio template started as sbt.
+
+| Build tool | Languages | Simulation source root | Resource root | Run one simulation |
+| --- | --- | --- | --- | --- |
+| sbt | Scala | `src/test/scala` or `src/it/scala` | `src/test/resources` | `sbt 'Gatling/testOnly <fqcn>'` |
+| Maven | Scala | `src/test/scala` | `src/test/resources` | `./mvnw gatling:test -Dgatling.simulationClass=<fqcn>` |
+| Maven | Java | `src/test/java` | `src/test/resources` | `./mvnw gatling:test -Dgatling.simulationClass=<fqcn>` |
+| Maven | Kotlin | `src/test/kotlin` | `src/test/resources` | `./mvnw gatling:test -Dgatling.simulationClass=<fqcn>` |
+| Gradle | Scala | `src/gatling/scala` | `src/gatling/resources` | `./gradlew gatlingRun --simulation <fqcn>` |
+| Gradle | Java | `src/gatling/java` | `src/gatling/resources` | `./gradlew gatlingRun --simulation <fqcn>` |
+| Gradle | Kotlin | `src/gatling/kotlin` | `src/gatling/resources` | `./gradlew gatlingRun --simulation <fqcn>` |
+
+Compile/pre-flight commands:
+
+```bash
+sbt Gatling/compile
+./mvnw test-compile
+./gradlew testClasses
+```
+
 ## Project Layout
 
-Expected layout:
+Keep the Galaxio boundaries regardless of language or build tool. Only the source
+root changes.
+
+Canonical Scala/sbt layout:
 
 ```text
-performance/
-  cases/       # atomic actions: HTTP, Kafka, JDBC, AMQP, JMS
-  feeders/     # custom feeders; prefer Picatinny feeders
-  scenarios/   # flows built from cases
 src/test/scala/org/galaxio/performance/
   performance.scala # package object with protocols
+  cases/            # atomic actions: HTTP, Kafka, JDBC, AMQP, JMS
+  feeders/          # custom feeders; prefer Picatinny feeders
+  scenarios/        # flows built from cases
   *Simulation.scala # simulations only
 src/test/resources/
   simulation.conf
   gatling.conf
   logback.xml
+```
+
+Same layout adapted to each build tool:
+
+```text
+# sbt or Maven + Scala
+src/test/scala/org/galaxio/performance/{performance.scala,cases,feeders,scenarios,*Simulation.scala}
+src/test/resources/{simulation.conf,gatling.conf,logback.xml}
+
+# Maven + Java
+src/test/java/org/galaxio/performance/{Performance.java,cases,feeders,scenarios,*Simulation.java}
+src/test/resources/{simulation.conf,gatling.conf,logback.xml}
+
+# Maven + Kotlin
+src/test/kotlin/org/galaxio/performance/{Performance.kt,cases,feeders,scenarios,*Simulation.kt}
+src/test/resources/{simulation.conf,gatling.conf,logback.xml}
+
+# Gradle + Scala
+src/gatling/scala/org/galaxio/performance/{performance.scala,cases,feeders,scenarios,*Simulation.scala}
+src/gatling/resources/{simulation.conf,gatling.conf,logback.xml}
+
+# Gradle + Java
+src/gatling/java/org/galaxio/performance/{Performance.java,cases,feeders,scenarios,*Simulation.java}
+src/gatling/resources/{simulation.conf,gatling.conf,logback.xml}
+
+# Gradle + Kotlin
+src/gatling/kotlin/org/galaxio/performance/{Performance.kt,cases,feeders,scenarios,*Simulation.kt}
+src/gatling/resources/{simulation.conf,gatling.conf,logback.xml}
 ```
 
 Keep boundaries strict:
@@ -48,9 +115,15 @@ Keep boundaries strict:
 - `feeders`: data only. No requests.
 - `scenarios`: business flow only. No injection profile.
 - `simulations`: injection, protocols, max duration. No request definitions.
-- `performance.scala`: shared protocols only.
+- `performance.scala`, `Performance.java`, or `Performance.kt`: shared protocols only.
+
+Do not use Gradle's `src/test/*` for Gatling simulations unless the project already
+customizes the `gatling` source set. Do not use Maven's `src/gatling/*` unless the
+project explicitly customizes plugin/source directories.
 
 ## Imports
+
+Scala DSL:
 
 Base:
 
@@ -82,9 +155,31 @@ import scala.concurrent.duration.DurationInt
 
 Only add assertion imports when user explicitly asks for NFR/assertions.
 
+Java DSL:
+
+```java
+import static io.gatling.javaapi.core.CoreDsl.*;
+import static io.gatling.javaapi.http.HttpDsl.*;
+
+import io.gatling.javaapi.core.*;
+import io.gatling.javaapi.http.*;
+```
+
+Kotlin DSL:
+
+```kotlin
+import io.gatling.javaapi.core.CoreDsl.*
+import io.gatling.javaapi.http.HttpDsl.*
+import io.gatling.javaapi.core.*
+import io.gatling.javaapi.http.*
+```
+
 ## Config
 
 Use Picatinny `SimulationConfig`.
+For Java/Kotlin projects without Picatinny bindings, centralize the same config
+keys in `Performance.java`/`Performance.kt` or a dedicated `Config` helper using
+system properties and resource config. Keep names compatible with Scala projects.
 
 Default params:
 
@@ -113,13 +208,34 @@ Do not hardcode env data in Scala. Put host, login, password, topic, queue, DB U
 
 Case = one atomic action.
 
-HTTP:
+Scala HTTP:
 
 ```scala
 object HttpCases {
   val getMainPage = http("GET /")
     .get("/")
     .check(status.is(200))
+}
+```
+
+Java HTTP:
+
+```java
+public final class HttpCases {
+  public static final ChainBuilder getMainPage =
+      exec(http("GET /").get("/").check(status().is(200)));
+
+  private HttpCases() {}
+}
+```
+
+Kotlin HTTP:
+
+```kotlin
+object HttpCases {
+    val getMainPage: ChainBuilder = exec(
+        http("GET /").get("/").check(status().shouldBe(200))
+    )
 }
 ```
 
@@ -189,7 +305,7 @@ Do not use tiny `queue` feeder under load. Feeder ends, test fails.
 
 ## Scenarios
 
-Pattern:
+Scala pattern:
 
 ```scala
 object MainScenario {
@@ -222,9 +338,33 @@ class ClosedPacingScenario {
 
 `pace` belongs inside scenario loop. Injection controls users. `pace` controls iteration rhythm.
 
+Java pattern:
+
+```java
+public final class MainScenario {
+  public static ScenarioBuilder create() {
+    return scenario("Main Scenario")
+        .feed(Feeders.messageId)
+        .exec(HttpCases.getMainPage);
+  }
+
+  private MainScenario() {}
+}
+```
+
+Kotlin pattern:
+
+```kotlin
+object MainScenario {
+    fun create(): ScenarioBuilder = scenario("Main Scenario")
+        .feed(Feeders.messageId)
+        .exec(HttpCases.getMainPage)
+}
+```
+
 ## Protocols
 
-Keep in `performance.scala`.
+Keep in `performance.scala`, `Performance.java`, or `Performance.kt`.
 
 HTTP:
 
@@ -235,6 +375,32 @@ package object performance {
     .acceptHeader("application/json")
     .contentTypeHeader("application/json")
     .disableFollowRedirect
+}
+```
+
+Java HTTP:
+
+```java
+public final class Performance {
+  public static final HttpProtocolBuilder httpProtocol = http
+      .baseUrl(System.getProperty("baseUrl"))
+      .acceptHeader("application/json")
+      .contentTypeHeader("application/json")
+      .disableFollowRedirect();
+
+  private Performance() {}
+}
+```
+
+Kotlin HTTP:
+
+```kotlin
+object Performance {
+    val httpProtocol: HttpProtocolBuilder = http
+        .baseUrl(System.getProperty("baseUrl"))
+        .acceptHeader("application/json")
+        .contentTypeHeader("application/json")
+        .disableFollowRedirect()
 }
 ```
 
@@ -292,7 +458,7 @@ val jmsProtocol = jms
 
 Simulation = load profile only.
 
-Open model, stable load:
+Scala open model, stable load:
 
 ```scala
 class StabilitySimulation extends Simulation {
@@ -353,6 +519,30 @@ Run:
 ```bash
 sbt 'Gatling/testOnly org.galaxio.performance.DebugSimulation'
 sbt 'Gatling/testOnly org.galaxio.performance.StabilitySimulation'
+```
+
+Java simulation shape:
+
+```java
+public class DebugSimulation extends Simulation {
+  {
+    setUp(
+        MainScenario.create().injectOpen(atOnceUsers(1))
+    ).protocols(Performance.httpProtocol);
+  }
+}
+```
+
+Kotlin simulation shape:
+
+```kotlin
+class DebugSimulation : Simulation() {
+    init {
+        setUp(
+            MainScenario.create().injectOpen(atOnceUsers(1))
+        ).protocols(Performance.httpProtocol)
+    }
+}
 ```
 
 ## Checks
@@ -482,6 +672,117 @@ libraryDependencies += "org.galaxio" %% "gatling-kafka-plugin" % "<version>" % T
 libraryDependencies += "org.galaxio" %% "gatling-amqp-plugin"  % "<version>" % Test
 ```
 
+sbt plugin:
+
+```scala
+// project/plugins.sbt
+addSbtPlugin("io.gatling" % "gatling-sbt" % "<gatling-sbt-plugin-version>")
+```
+
+Maven Java shape:
+
+```xml
+<dependencies>
+  <dependency>
+    <groupId>io.gatling.highcharts</groupId>
+    <artifactId>gatling-charts-highcharts</artifactId>
+    <version>${gatling.version}</version>
+    <scope>test</scope>
+  </dependency>
+</dependencies>
+
+<build>
+  <plugins>
+    <plugin>
+      <groupId>io.gatling</groupId>
+      <artifactId>gatling-maven-plugin</artifactId>
+      <version>${gatling-maven-plugin.version}</version>
+    </plugin>
+  </plugins>
+</build>
+```
+
+Maven Scala additions:
+
+```xml
+<testSourceDirectory>src/test/scala</testSourceDirectory>
+<plugin>
+  <groupId>net.alchim31.maven</groupId>
+  <artifactId>scala-maven-plugin</artifactId>
+  <version>${scala-maven-plugin.version}</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>testCompile</goal>
+      </goals>
+    </execution>
+  </executions>
+</plugin>
+```
+
+Maven Kotlin additions:
+
+```xml
+<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+<dependency>
+  <groupId>org.jetbrains.kotlin</groupId>
+  <artifactId>kotlin-stdlib</artifactId>
+  <version>${kotlin.version}</version>
+</dependency>
+<plugin>
+  <groupId>org.jetbrains.kotlin</groupId>
+  <artifactId>kotlin-maven-plugin</artifactId>
+  <version>${kotlin.version}</version>
+</plugin>
+```
+
+Gradle Scala shape:
+
+```groovy
+plugins {
+  id 'scala'
+  id 'io.gatling.gradle' version '<gatling-gradle-plugin-version>'
+}
+
+repositories {
+  mavenCentral()
+}
+
+tasks.withType(ScalaCompile) {
+  scalaCompileOptions.forkOptions.jvmArgs = ['-Xss100m']
+}
+```
+
+Gradle Java shape:
+
+```groovy
+plugins {
+  id 'java'
+  id 'io.gatling.gradle' version '<gatling-gradle-plugin-version>'
+}
+
+repositories {
+  mavenCentral()
+}
+```
+
+Gradle Kotlin shape:
+
+```kotlin
+plugins {
+    kotlin("jvm") version "<kotlin-version>"
+    kotlin("plugin.allopen") version "<kotlin-version>"
+    id("io.gatling.gradle") version "<gatling-gradle-plugin-version>"
+}
+
+repositories {
+    mavenCentral()
+}
+```
+
+For Gradle-only dependencies used by simulations, add them to `gatling`,
+`gatlingImplementation`, or `gatlingRuntimeOnly`, not only to `implementation`.
+
 ## Do Not
 
 Do not mix cases, scenario, simulation in one file.
@@ -507,3 +808,9 @@ Do not ignore feeder exhaustion.
 Do not add NFR gates unless user asks.
 
 Do not use Scala 3 for Gatling plugin projects unless repo already supports it.
+
+Do not put Gatling Gradle simulations in `src/test/*` unless the project has
+explicitly customized the `gatling` source set.
+
+Do not omit `scala-maven-plugin` in Maven Scala projects; Gatling Maven plugin v4+
+does not compile Scala simulations by itself.
