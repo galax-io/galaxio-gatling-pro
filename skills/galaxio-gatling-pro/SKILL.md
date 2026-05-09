@@ -1,6 +1,14 @@
-<!-- This file is kept for reference only. -->
-<!-- The canonical skill is now at skills/galaxio-gatling-pro/SKILL.md -->
-<!-- The plugin manifest is at .claude-plugin/plugin.json -->
+---
+name: galaxio-gatling-pro
+description: >
+  Use when creating, reviewing, or refactoring Gatling JVM performance tests
+  in Galaxio style: Scala/Java/Kotlin projects with sbt, Maven, or Gradle,
+  Gatling 3.x, Picatinny config/feeders where available,
+  cases/feeders/scenarios/simulations layout,
+  HTTP/JDBC/JMS/Kafka/AMQP protocols, open and closed workload models,
+  smoke/debug simulations, and build-tool-correct project structure.
+argument-hint: "<file path, simulation class, or describe what to build>"
+---
 
 # Galaxio Gatling Pro
 

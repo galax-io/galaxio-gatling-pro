@@ -1,0 +1,8 @@
+{
+  "name": "galaxio-gatling-pro",
+  "version": "1.0.0",
+  "description": "Gatling JVM performance test guidance for Galaxio-style repositories — Scala, Java, Kotlin with sbt, Maven, or Gradle.",
+  "author": {
+    "name": "Galaxio"
+  }
+}

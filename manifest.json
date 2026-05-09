@@ -1,4 +1,5 @@
 {
+  "_comment": "Deprecated — superseded by .claude-plugin/plugin.json. Kept for reference only.",
   "name": "galaxio-gatling-pro",
   "version": "1.0.0",
   "description": "Gatling JVM performance test guidance for Galaxio-style repositories",
