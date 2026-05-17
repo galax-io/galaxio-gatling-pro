@@ -1,5 +1,8 @@
 ---
 name: galaxio-gatling-pro
+version: 1.0.0
+scope: performance-testing
+file_policy: markdown-only
 description: >
   Use when creating, reviewing, or refactoring Gatling JVM performance tests
   in Galaxio style: Scala/Java/Kotlin projects with sbt, Maven, or Gradle,

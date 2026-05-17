@@ -1,0 +1,82 @@
+name: Lint & Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  markdown-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: "**/*.md"
+
+  validate-skill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required files exist
+        run: |
+          for f in SKILL.md CLAUDE.md manifest.json agents/openai.yaml LICENSE; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Missing required file: $f"
+              exit 1
+            fi
+          done
+          echo "All required files present."
+
+      - name: Validate SKILL.md frontmatter
+        run: |
+          head -20 SKILL.md | grep -q "^name:" || { echo "::error::SKILL.md missing 'name' in frontmatter"; exit 1; }
+          head -20 SKILL.md | grep -q "^version:" || { echo "::error::SKILL.md missing 'version' in frontmatter"; exit 1; }
+          head -20 SKILL.md | grep -q "^description:" || { echo "::error::SKILL.md missing 'description' in frontmatter"; exit 1; }
+          echo "SKILL.md frontmatter valid."
+
+      - name: Validate manifest.json
+        run: |
+          python3 -c "
+          import json, sys
+          with open('manifest.json') as f:
+              data = json.load(f)
+          required = ['name', 'version', 'description', 'activation']
+          missing = [k for k in required if k not in data]
+          if missing:
+              print(f'::error::manifest.json missing fields: {missing}')
+              sys.exit(1)
+          print('manifest.json valid.')
+          "
+
+      - name: Validate agents/openai.yaml
+        run: |
+          python3 -c "
+          import yaml, sys
+          with open('agents/openai.yaml') as f:
+              data = yaml.safe_load(f)
+          if not data or 'interface' not in data:
+              print('::error::agents/openai.yaml missing interface section')
+              sys.exit(1)
+          print('agents/openai.yaml valid.')
+          "
+
+  link-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check internal markdown links
+        run: |
+          exit_code=0
+          for link in $(grep -rohP '\[.*?\]\(\./[^)]+\)' *.md | grep -oP '\(\./[^)]+\)' | tr -d '()'); do
+            if [ ! -f "$link" ]; then
+              echo "::error::Broken link: $link"
+              exit_code=1
+            fi
+          done
+          exit $exit_code
