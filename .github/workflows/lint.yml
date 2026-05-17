@@ -73,10 +73,13 @@ jobs:
       - name: Check internal markdown links
         run: |
           exit_code=0
-          for link in $(grep -rohP '\[.*?\]\(\./[^)]+\)' *.md | grep -oP '\(\./[^)]+\)' | tr -d '()'); do
-            if [ ! -f "$link" ]; then
-              echo "::error::Broken link: $link"
-              exit_code=1
-            fi
+          for f in *.md; do
+            # Strip fenced code blocks before extracting links
+            for link in $(sed '/^```/,/^```/d' "$f" | grep -oP '\]\(\./[^)]+\)' | grep -oP '\./[^)]+'); do
+              if [ ! -f "$link" ]; then
+                echo "::error file=$f::Broken link: $link"
+                exit_code=1
+              fi
+            done
           done
           exit $exit_code
