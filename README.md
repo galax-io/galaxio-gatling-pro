@@ -12,8 +12,16 @@ Agent skill for writing, reviewing, and refactoring Gatling JVM performance test
 
 ### Quick Install (npx)
 
+Global:
+
 ```bash
-npx degit galax-io/galaxio-gatling-pro ~/.claude/skills/galaxio-gatling-pro
+npx skills add galax-io/galaxio-gatling-pro -g
+```
+
+Project-local:
+
+```bash
+npx skills add galax-io/galaxio-gatling-pro
 ```
 
 ### Claude Code
