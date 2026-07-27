@@ -1,5 +1,11 @@
 # Galaxio Gatling Pro
 
+> **⚠️ DEPRECATED — this repository has moved.**
+>
+> The skill now ships as the `galaxio-gatling-pro` plugin in the
+> [Galaxio Performance Kit marketplace](https://github.com/galax-io/ai-plugins). This repository is
+> archived and receives no further updates.
+
 Agent skill for Gatling JVM performance testing in Galaxio-style repositories.
 
 ## Skill Entry Point
@@ -17,22 +23,18 @@ Activates when working with:
 
 ## Install — Claude Code
 
-Global (all projects):
-
 ```bash
-git clone https://github.com/galax-io/galaxio-gatling-pro.git ~/.claude/skills/galaxio-gatling-pro
+claude plugin marketplace add galax-io/ai-plugins
 ```
 
-Project-local:
-
-```bash
-git clone https://github.com/galax-io/galaxio-gatling-pro.git .claude/skills/galaxio-gatling-pro
+```text
+/plugin install galaxio-gatling-pro@galaxio-performance-kit
 ```
 
 ## Install — OpenAI Codex
 
-Add as workspace skill. Codex auto-discovers via `agents/openai.yaml` and `manifest.json`:
-
 ```bash
-git clone https://github.com/galax-io/galaxio-gatling-pro.git .codex/skills/galaxio-gatling-pro
+codex plugin marketplace add galax-io/ai-plugins
 ```
+
+Then invoke the skill with `$galaxio-gatling-pro`.
