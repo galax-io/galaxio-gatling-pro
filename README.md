@@ -1,5 +1,13 @@
 # Galaxio Gatling Pro
 
+> **⚠️ DEPRECATED — this repository has moved.**
+>
+> The skill now ships as the `galaxio-gatling-pro` plugin in the
+> [Galaxio Performance Kit marketplace](https://github.com/galax-io/ai-plugins), where it installs
+> in Cursor, Claude Code and Codex from one source. This repository is archived and receives no
+> further updates. See [Installation](#installation) for the new commands.
+
+[![Deprecated](https://img.shields.io/badge/status-deprecated-red.svg)](https://github.com/galax-io/ai-plugins)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 ![Agent Skill](https://img.shields.io/badge/type-agent--skill-orange.svg)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-blueviolet.svg)
@@ -10,57 +18,32 @@ Agent skill for writing, reviewing, and refactoring Gatling JVM performance test
 
 ## Installation
 
-### Quick Install (npx)
-
-Global:
-
-```bash
-npx skills add galax-io/galaxio-gatling-pro -g
-```
-
-Project-local:
-
-```bash
-npx skills add galax-io/galaxio-gatling-pro
-```
+Install from the [Galaxio Performance Kit marketplace](https://github.com/galax-io/ai-plugins).
+The `git clone` and `npx skills add` recipes that used to live here are no longer maintained: this
+repository is frozen at the last standalone release, and everything new lands in the marketplace.
 
 ### Claude Code
 
-Global (available in all projects):
-
 ```bash
-git clone https://github.com/galax-io/galaxio-gatling-pro.git ~/.claude/skills/galaxio-gatling-pro
+claude plugin marketplace add galax-io/ai-plugins
 ```
 
-Project-local (current project only):
-
-```bash
-git clone https://github.com/galax-io/galaxio-gatling-pro.git .claude/skills/galaxio-gatling-pro
+```text
+/plugin install galaxio-gatling-pro@galaxio-performance-kit
 ```
 
 ### OpenAI Codex
 
-Add as AGENTS.md reference or clone into workspace. Codex auto-discovers via `agents/openai.yaml` and `manifest.json`:
-
 ```bash
-git clone https://github.com/galax-io/galaxio-gatling-pro.git
+codex plugin marketplace add galax-io/ai-plugins
 ```
 
-Then reference in your `AGENTS.md`:
+Then invoke the skill with `$galaxio-gatling-pro`.
 
-```markdown
-## Skills
+### Cursor
 
-- [galaxio-gatling-pro](./galaxio-gatling-pro/SKILL.md) — Gatling JVM performance test patterns
-```
-
-### Marketplace
-
-Published as a reusable agent skill. To add to your project from the marketplace:
-
-1. Search for `galaxio-gatling-pro` in your agent marketplace
-2. Click **Install** or add manually via git clone above
-3. Skill auto-activates on Gatling-related file patterns
+Copy `plugins/galaxio-gatling-pro` from the marketplace repository into `~/.cursor/plugins/local`
+and restart Cursor, until the kit is published to the Cursor marketplace.
 
 ## What It Covers
 
